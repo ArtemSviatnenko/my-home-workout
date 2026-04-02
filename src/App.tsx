@@ -12,7 +12,7 @@ const TABS = [
 
 export default function App() {
   const [tab, setTab] = useState("A");
-  const { state: session, startWorkout, skip, pause, resume, abort } = useWorkoutSession();
+  const { state: session, startWorkout, prev, skip, pause, resume, abort } = useWorkoutSession();
 
   return (
     <div style={{
@@ -68,10 +68,11 @@ export default function App() {
           workout={workouts[tab]}
           session={session}
           onStart={startWorkout}
+          onPrev={prev}
           onSkip={skip}
           onPause={pause}
           onResume={resume}
-          onAbort={abort}
+          onStop={abort}
         />
       )}
       {tab === "sched" && <ProgressionView />}

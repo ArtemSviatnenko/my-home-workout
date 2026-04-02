@@ -10,13 +10,14 @@ interface Props {
   workout: Workout;
   session: WorkoutSessionState;
   onStart: (key: "A" | "B") => void;
+  onPrev: () => void;
   onSkip: () => void;
   onPause: () => void;
   onResume: () => void;
-  onAbort: () => void;
+  onStop: () => void;
 }
 
-export default function WorkoutView({ workoutKey, workout, session, onStart, onSkip, onPause, onResume, onAbort }: Props) {
+export default function WorkoutView({ workoutKey, workout, session, onStart, onPrev, onSkip, onPause, onResume, onStop }: Props) {
   const [expanded, setExpanded] = useState<string | null>(null);
   const currentEx = session.phase !== "idle" ? workout.exercises[session.exerciseIndex] ?? null : null;
 
@@ -31,10 +32,11 @@ export default function WorkoutView({ workoutKey, workout, session, onStart, onS
           state={session}
           exercise={currentEx}
           workoutColor={workout.color}
+          onPrev={onPrev}
           onSkip={onSkip}
           onPause={onPause}
           onResume={onResume}
-          onAbort={onAbort}
+          onStop={onStop}
           exerciseDuration={EXERCISE_DURATION}
           restDuration={REST_DURATION}
           bufferDuration={BUFFER_DURATION}

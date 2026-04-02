@@ -18,6 +18,7 @@ type Action =
   | { type: "TICK" }
   | { type: "PHASE_COMPLETE" }
   | { type: "SKIP" }
+  | { type: "PREV" }
   | { type: "PAUSE" }
   | { type: "RESUME" }
   | { type: "ABORT" };
@@ -65,6 +66,17 @@ function reducer(state: WorkoutSessionState, action: Action): WorkoutSessionStat
     case "PHASE_COMPLETE":
     case "SKIP":
       return { ...advance(state), paused: false };
+    case "PREV": {
+      // If not the first set of first exercise, go back one set (or one exercise)
+      const { exerciseIndex, setIndex } = state;
+      if (setIndex > 0) {
+        return { ...state, phase: "exercise", setIndex: setIndex - 1, timeRemaining: EXERCISE_DURATION, paused: false };
+      } else if (exerciseIndex > 0) {
+        return { ...state, phase: "exercise", exerciseIndex: exerciseIndex - 1, setIndex: SETS_PER_EXERCISE - 1, timeRemaining: EXERCISE_DURATION, paused: false };
+      }
+      // Already at first set of first exercise — restart the buffer
+      return { ...state, phase: "buffer", exerciseIndex: 0, setIndex: 0, timeRemaining: BUFFER_DURATION, paused: false };
+    }
     case "PAUSE":
       return { ...state, paused: true };
     case "RESUME":
@@ -116,9 +128,10 @@ export function useWorkoutSession() {
     dispatch({ type: "START", workoutKey });
   }
   function skip()   { dispatch({ type: "SKIP" }); }
+  function prev()   { dispatch({ type: "PREV" }); }
   function pause()  { dispatch({ type: "PAUSE" }); }
   function resume() { dispatch({ type: "RESUME" }); }
   function abort()  { dispatch({ type: "ABORT" }); }
 
-  return { state, startWorkout, skip, pause, resume, abort };
+  return { state, startWorkout, skip, prev, pause, resume, abort };
 }
