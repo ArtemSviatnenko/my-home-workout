@@ -126,7 +126,13 @@ export default function WorkoutTimerPanel({ state, exercise, nextExercise, worko
   const isComplete = phase === "complete";
 
   return (
-    <div className="timer-panel" style={{ borderColor: color }}>
+    <div style={{
+      position: "fixed", inset: 0, zIndex: 100,
+      background: "#fff",
+      display: "flex", alignItems: "center", justifyContent: "center",
+      padding: "24px 20px",
+    }}>
+    <div className="timer-panel" style={{ borderColor: color, width: "100%", maxWidth: 480 }}>
 
       {/* Progress */}
       {!isComplete && (
@@ -260,6 +266,7 @@ export default function WorkoutTimerPanel({ state, exercise, nextExercise, worko
         )}
       </div>
 
+    </div>
     </div>
   );
 }
