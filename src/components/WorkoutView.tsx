@@ -9,7 +9,6 @@ interface Props {
   workoutKey: "A" | "B";
   workout: Workout;
   session: WorkoutSessionState;
-  onStart: (key: "A" | "B") => void;
   onPrev: () => void;
   onSkip: () => void;
   onPause: () => void;
@@ -17,7 +16,7 @@ interface Props {
   onStop: () => void;
 }
 
-export default function WorkoutView({ workoutKey, workout, session, onStart, onPrev, onSkip, onPause, onResume, onStop }: Props) {
+export default function WorkoutView({ workoutKey, workout, session, onPrev, onSkip, onPause, onResume, onStop }: Props) {
   const [expanded, setExpanded] = useState<string | null>(null);
   const currentEx = session.phase !== "idle" ? workout.exercises[session.exerciseIndex] ?? null : null;
   const nextEx = session.phase === "rest" ? workout.exercises[session.exerciseIndex] ?? null : null;
@@ -74,26 +73,6 @@ export default function WorkoutView({ workoutKey, workout, session, onStart, onP
         <span>🕐 Duration: <strong>35–45 min</strong></span>
       </div>
 
-      {session.phase === "idle" && (
-        <button
-          onClick={() => onStart(workoutKey)}
-          style={{
-            marginTop: 12,
-            width: "100%",
-            padding: "12px 0",
-            borderRadius: 8,
-            border: "none",
-            background: "#10b981",
-            color: "#fff",
-            fontSize: 14,
-            fontWeight: 600,
-            cursor: "pointer",
-            letterSpacing: "0.02em",
-          }}
-        >
-          Start Workout
-        </button>
-      )}
     </div>
   );
 }

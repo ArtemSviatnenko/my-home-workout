@@ -61,13 +61,34 @@ export default function App() {
         })}
       </div>
 
+      {/* Start Workout button */}
+      {(tab === "A" || tab === "B") && session.phase === "idle" && (
+        <button
+          onClick={() => startWorkout(tab as "A" | "B")}
+          style={{
+            width: "100%",
+            padding: "12px 0",
+            borderRadius: 8,
+            border: "none",
+            background: "#10b981",
+            color: "#fff",
+            fontSize: 14,
+            fontWeight: 600,
+            cursor: "pointer",
+            letterSpacing: "0.02em",
+            marginBottom: 20,
+          }}
+        >
+          Start Workout
+        </button>
+      )}
+
       {/* Views */}
       {(tab === "A" || tab === "B") && (
         <WorkoutView
           workoutKey={tab}
           workout={workouts[tab]}
           session={session}
-          onStart={startWorkout}
           onPrev={prev}
           onSkip={skip}
           onPause={pause}
