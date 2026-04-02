@@ -41,13 +41,6 @@ const badge: Record<string, { bg: string; color: string }> = {
   Normal:    { bg: "#dbeafe", color: "#1d4ed8" },
 };
 
-// Shared style tokens
-const card: React.CSSProperties = {
-  background: "#fff",
-  border: "1px solid #eaeaea",
-  borderRadius: 8,
-  marginBottom: 8,
-};
 
 export default function App() {
   const [tab, setTab] = useState("A");
@@ -122,7 +115,7 @@ export default function App() {
                 <div
                   key={i}
                   onClick={() => setExpanded(open ? null : key)}
-                  style={{ ...card, cursor: "pointer" }}
+                  className="exercise-card"
                 >
                   <div style={{ display: "flex", alignItems: "center", padding: "12px 16px", gap: 12 }}>
                     <div style={{ flex: 1, minWidth: 0 }}>
@@ -148,7 +141,7 @@ export default function App() {
                       fontSize: 13,
                       color: "#444",
                       lineHeight: 1.6,
-                      background: "#fafafa",
+                      background: "#f0f0f0",
                       borderRadius: "0 0 8px 8px",
                     }}>
                       💡 {ex.tip}
@@ -185,7 +178,7 @@ export default function App() {
           </p>
 
           {schedule.map((s, i) => (
-            <div key={i} style={{ ...card, padding: "12px 16px" }}>
+            <div key={i} className="week-card">
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <span style={{ fontSize: 14, fontWeight: 500, color: "#0a0a0a" }}>Week {s.week}</span>
                 <span style={{
