@@ -105,7 +105,7 @@ export default function App() {
       {tab === "sched" && <ProgressionView />}
 
       {/* Continue pill — shown when timer is minimized, persists across tabs */}
-      {session.phase !== "idle" && minimized && (
+      {session.phase !== "idle" && minimized && tab !== "sched" && (
         <button
           onClick={() => { setMinimized(false); resume(); }}
           style={{
