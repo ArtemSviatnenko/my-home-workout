@@ -36,7 +36,7 @@ const schedule = [
 
 export default function App() {
   const [tab, setTab] = useState("A");
-  const [expanded, setExpanded] = useState(null);
+  const [expanded, setExpanded] = useState<string | null>(null);
 
   return (
     <div style={{ fontFamily: "sans-serif", maxWidth: 600, margin: "0 auto", padding: 16, color: "var(--text-primary, #1f2937)" }}>
