@@ -1,35 +1,18 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&display=swap');
 
-*, *::before, *::after {
-  box-sizing: border-box;
-}
+*, *::before, *::after { box-sizing: border-box; }
 
 html, body {
   margin: 0;
   padding: 0;
-  background: #f8f7f5;
-  color: #1a1a1a;
-  font-family: 'DM Sans', system-ui, sans-serif;
-  font-size: 15px;
+  background: #fff;
+  color: #0a0a0a;
+  font-family: 'Geist', 'Inter', system-ui, sans-serif;
+  font-size: 14px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   color-scheme: light;
 }
 
-#root {
-  width: 100%;
-  min-height: 100vh;
-}
-
-h2 {
-  margin: 0;
-  font-weight: 600;
-}
-
-p {
-  margin: 0;
-}
-
-button {
-  font-family: inherit;
-}
+#root { width: 100%; }
+h2, p, button { margin: 0; font-family: inherit; }
