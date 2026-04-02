@@ -1,5 +1,6 @@
 import { useReducer, useEffect, useRef } from "react";
 import { useWorkoutAudio } from "./useWorkoutAudio";
+import { BUFFER_DURATION, EXERCISE_DURATION, REST_DURATION, SETS_PER_EXERCISE, TOTAL_EXERCISES } from "../constants/timer";
 
 export type Phase = "idle" | "buffer" | "exercise" | "rest" | "complete";
 
@@ -17,12 +18,6 @@ type Action =
   | { type: "PHASE_COMPLETE" }
   | { type: "SKIP" }
   | { type: "ABORT" };
-
-const BUFFER_DURATION = 5;
-const EXERCISE_DURATION = 40;
-const REST_DURATION = 60;
-const SETS_PER_EXERCISE = 3;
-const TOTAL_EXERCISES = 6;
 
 const INITIAL_STATE: WorkoutSessionState = {
   phase: "idle",
@@ -114,5 +109,5 @@ export function useWorkoutSession() {
   function skip() { dispatch({ type: "SKIP" }); }
   function abort() { dispatch({ type: "ABORT" }); }
 
-  return { state, startWorkout, skip, abort, EXERCISE_DURATION, REST_DURATION, BUFFER_DURATION };
+  return { state, startWorkout, skip, abort };
 }
