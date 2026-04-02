@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useWorkoutSession } from "./hooks/useWorkoutSession";
+import WorkoutTimerPanel from "./components/WorkoutTimerPanel";
 
 const workouts = {
   A: {
@@ -45,6 +47,7 @@ const badge: Record<string, { bg: string; color: string }> = {
 export default function App() {
   const [tab, setTab] = useState("A");
   const [expanded, setExpanded] = useState<string | null>(null);
+  const { state: session, startWorkout, skip, abort, EXERCISE_DURATION, REST_DURATION, BUFFER_DURATION } = useWorkoutSession();
 
   return (
     <div style={{
@@ -101,8 +104,23 @@ export default function App() {
       {/* Workout A / B */}
       {(tab === "A" || tab === "B") && (() => {
         const w = workouts[tab];
+        const currentEx = session.phase !== "idle" ? w.exercises[session.exerciseIndex] ?? null : null;
         return (
           <div>
+            {/* Timer panel */}
+            {session.phase !== "idle" && (
+              <WorkoutTimerPanel
+                state={session}
+                exercise={currentEx}
+                workoutColor={w.color}
+                onSkip={skip}
+                onAbort={abort}
+                exerciseDuration={EXERCISE_DURATION}
+                restDuration={REST_DURATION}
+                bufferDuration={BUFFER_DURATION}
+              />
+            )}
+
             {/* Section label */}
             <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "#999", marginBottom: 10 }}>
               {w.title}
@@ -166,6 +184,28 @@ export default function App() {
               <span>⏱ Rest: <strong>60–90 sec</strong></span>
               <span>🕐 Duration: <strong>35–45 min</strong></span>
             </div>
+
+            {/* Start Workout button */}
+            {session.phase === "idle" && (
+              <button
+                onClick={() => startWorkout(tab as "A" | "B")}
+                style={{
+                  marginTop: 12,
+                  width: "100%",
+                  padding: "12px 0",
+                  borderRadius: 8,
+                  border: "none",
+                  background: w.color,
+                  color: "#fff",
+                  fontSize: 14,
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  letterSpacing: "0.02em",
+                }}
+              >
+                Start Workout
+              </button>
+            )}
           </div>
         );
       })()}

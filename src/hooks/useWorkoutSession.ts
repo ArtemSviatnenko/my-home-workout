@@ -1,0 +1,118 @@
+import { useReducer, useEffect, useRef } from "react";
+import { useWorkoutAudio } from "./useWorkoutAudio";
+
+export type Phase = "idle" | "buffer" | "exercise" | "rest" | "complete";
+
+export interface WorkoutSessionState {
+  phase: Phase;
+  workoutKey: "A" | "B";
+  exerciseIndex: number;
+  setIndex: number;
+  timeRemaining: number;
+}
+
+type Action =
+  | { type: "START"; workoutKey: "A" | "B" }
+  | { type: "TICK" }
+  | { type: "PHASE_COMPLETE" }
+  | { type: "SKIP" }
+  | { type: "ABORT" };
+
+const BUFFER_DURATION = 5;
+const EXERCISE_DURATION = 40;
+const REST_DURATION = 60;
+const SETS_PER_EXERCISE = 3;
+const TOTAL_EXERCISES = 6;
+
+const INITIAL_STATE: WorkoutSessionState = {
+  phase: "idle",
+  workoutKey: "A",
+  exerciseIndex: 0,
+  setIndex: 0,
+  timeRemaining: 0,
+};
+
+function advance(state: WorkoutSessionState): WorkoutSessionState {
+  const { exerciseIndex, setIndex } = state;
+  const moreSetsSameEx = setIndex + 1 < SETS_PER_EXERCISE;
+  const moreExercises = exerciseIndex + 1 < TOTAL_EXERCISES;
+
+  if (state.phase === "buffer") {
+    return { ...state, phase: "exercise", timeRemaining: EXERCISE_DURATION };
+  }
+  if (state.phase === "exercise") {
+    if (moreSetsSameEx) {
+      return { ...state, phase: "rest", timeRemaining: REST_DURATION, setIndex: setIndex + 1 };
+    } else if (moreExercises) {
+      return { ...state, phase: "rest", timeRemaining: REST_DURATION, setIndex: 0, exerciseIndex: exerciseIndex + 1 };
+    } else {
+      return { ...state, phase: "complete", timeRemaining: 0 };
+    }
+  }
+  if (state.phase === "rest") {
+    return { ...state, phase: "exercise", timeRemaining: EXERCISE_DURATION };
+  }
+  return state;
+}
+
+function reducer(state: WorkoutSessionState, action: Action): WorkoutSessionState {
+  switch (action.type) {
+    case "START":
+      return { phase: "buffer", workoutKey: action.workoutKey, exerciseIndex: 0, setIndex: 0, timeRemaining: BUFFER_DURATION };
+    case "TICK":
+      if (state.timeRemaining <= 1) return advance(state);
+      return { ...state, timeRemaining: state.timeRemaining - 1 };
+    case "PHASE_COMPLETE":
+    case "SKIP":
+      return advance(state);
+    case "ABORT":
+      return INITIAL_STATE;
+    default:
+      return state;
+  }
+}
+
+export function useWorkoutSession() {
+  const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
+  const audio = useWorkoutAudio();
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const prevPhaseRef = useRef<Phase>("idle");
+
+  // Tick interval
+  useEffect(() => {
+    const active = state.phase !== "idle" && state.phase !== "complete";
+    if (active) {
+      intervalRef.current = setInterval(() => dispatch({ type: "TICK" }), 1000);
+    }
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [state.phase]);
+
+  // Phase-change audio
+  useEffect(() => {
+    if (state.phase === prevPhaseRef.current) return;
+    prevPhaseRef.current = state.phase;
+    switch (state.phase) {
+      case "buffer":   audio.playWorkoutStart(); break;
+      case "exercise": audio.playExerciseStart(); break;
+      case "rest":     audio.playRestStart(); break;
+      case "complete": audio.playComplete(); break;
+    }
+  }, [state.phase]);
+
+  // Mid-rest audio cues
+  useEffect(() => {
+    if (state.phase !== "rest") return;
+    if (state.timeRemaining === 30) audio.playHalfwayBeep();
+    if (state.timeRemaining <= 3 && state.timeRemaining > 0) audio.playCountdownBeep();
+  }, [state.timeRemaining, state.phase]);
+
+  function startWorkout(workoutKey: "A" | "B") {
+    dispatch({ type: "START", workoutKey });
+  }
+  function skip() { dispatch({ type: "SKIP" }); }
+  function abort() { dispatch({ type: "ABORT" }); }
+
+  return { state, startWorkout, skip, abort, EXERCISE_DURATION, REST_DURATION, BUFFER_DURATION };
+}
