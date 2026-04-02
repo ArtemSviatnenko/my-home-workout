@@ -68,5 +68,13 @@ export function useWorkoutAudio() {
     playTone(1047, t + 0.54, 0.35);
   }, []);
 
-  return { playWorkoutStart, playExerciseStart, playRestStart, playHalfwayBeep, playCountdownBeep, playComplete };
+  // Two descending tones — signals cancellation
+  const playStop = useCallback(() => {
+    const ctx = getCtx();
+    const t = ctx.currentTime;
+    playTone(440, t, 0.15);        // A4
+    playTone(330, t + 0.18, 0.25); // E4
+  }, []);
+
+  return { playWorkoutStart, playExerciseStart, playRestStart, playHalfwayBeep, playCountdownBeep, playComplete, playStop };
 }

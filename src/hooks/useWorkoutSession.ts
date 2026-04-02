@@ -131,7 +131,7 @@ export function useWorkoutSession() {
   function prev()   { dispatch({ type: "PREV" }); }
   function pause()  { dispatch({ type: "PAUSE" }); }
   function resume() { dispatch({ type: "RESUME" }); }
-  function abort()  { dispatch({ type: "ABORT" }); }
+  function abort()  { audio.playStop(); dispatch({ type: "ABORT" }); }
 
   return { state, startWorkout, skip, prev, pause, resume, abort };
 }
