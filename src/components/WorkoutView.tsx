@@ -20,6 +20,7 @@ interface Props {
 export default function WorkoutView({ workoutKey, workout, session, onStart, onPrev, onSkip, onPause, onResume, onStop }: Props) {
   const [expanded, setExpanded] = useState<string | null>(null);
   const currentEx = session.phase !== "idle" ? workout.exercises[session.exerciseIndex] ?? null : null;
+  const nextEx = session.phase === "rest" ? workout.exercises[session.exerciseIndex] ?? null : null;
 
   function handleToggle(id: string) {
     setExpanded(prev => (prev === id ? null : id));
@@ -31,6 +32,7 @@ export default function WorkoutView({ workoutKey, workout, session, onStart, onP
         <WorkoutTimerPanel
           state={session}
           exercise={currentEx}
+          nextExercise={nextEx}
           workoutColor={workout.color}
           onPrev={onPrev}
           onSkip={onSkip}

@@ -10,6 +10,7 @@ interface Exercise {
 interface Props {
   state: WorkoutSessionState;
   exercise: Exercise | null;
+  nextExercise: Exercise | null;
   workoutColor: string;
   onPrev: () => void;
   onSkip: () => void;
@@ -56,7 +57,7 @@ function formatTime(secs: number): string {
   return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 }
 
-const RADIUS = 54;
+const RADIUS = 72;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
 const iconBtn: React.CSSProperties = {
@@ -116,7 +117,7 @@ function IconStop() {
   );
 }
 
-export default function WorkoutTimerPanel({ state, exercise, workoutColor, onPrev, onSkip, onPause, onResume, onStop, exerciseDuration, restDuration, bufferDuration }: Props) {
+export default function WorkoutTimerPanel({ state, exercise, nextExercise, workoutColor, onPrev, onSkip, onPause, onResume, onStop, exerciseDuration, restDuration, bufferDuration }: Props) {
   const { phase, timeRemaining, exerciseIndex, setIndex, paused } = state;
   const color = phaseColor(phase, workoutColor);
   const total = phaseDuration(phase, exerciseDuration, restDuration, bufferDuration);
@@ -182,17 +183,17 @@ export default function WorkoutTimerPanel({ state, exercise, workoutColor, onPre
 
           {/* SVG Ring */}
           <div
-            style={{ position: "relative", width: 140, height: 140, opacity: paused ? 0.45 : 1, transition: "opacity 0.2s", cursor: "pointer" }}
+            style={{ position: "relative", width: 170, height: 170, opacity: paused ? 0.45 : 1, transition: "opacity 0.2s", cursor: "pointer" }}
             onClick={paused ? onResume : onPause}
             title={paused ? "Resume" : "Pause"}
           >
-            <svg width="140" height="140" style={{ transform: "rotate(-90deg)" }}>
-              <circle cx="70" cy="70" r={RADIUS} fill="none" stroke="#eaeaea" strokeWidth="8" />
+            <svg width="170" height="170" style={{ transform: "rotate(-90deg)" }}>
+              <circle cx="85" cy="85" r={RADIUS} fill="none" stroke="#eaeaea" strokeWidth="4" />
               <circle
-                cx="70" cy="70" r={RADIUS}
+                cx="85" cy="85" r={RADIUS}
                 fill="none"
                 stroke={color}
-                strokeWidth="8"
+                strokeWidth="4"
                 strokeLinecap="round"
                 strokeDasharray={CIRCUMFERENCE}
                 strokeDashoffset={dashOffset}
@@ -202,9 +203,9 @@ export default function WorkoutTimerPanel({ state, exercise, workoutColor, onPre
             {/* Countdown + pause icon overlay */}
             <div style={{
               position: "absolute", inset: 0, display: "flex", flexDirection: "column",
-              alignItems: "center", justifyContent: "center", gap: 2,
+              alignItems: "center", justifyContent: "center", gap: 4,
             }}>
-              <div style={{ fontSize: 30, fontWeight: 700, fontFamily: "monospace", color: "#0a0a0a", lineHeight: 1 }}>
+              <div style={{ fontSize: 32, fontWeight: 700, fontFamily: "monospace", color: "#0a0a0a", lineHeight: 1 }}>
                 {formatTime(timeRemaining)}
               </div>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -217,6 +218,26 @@ export default function WorkoutTimerPanel({ state, exercise, workoutColor, onPre
           <button onClick={onSkip} style={iconBtn} title="Skip">
             <IconNext />
           </button>
+        </div>
+      )}
+
+      {/* Next exercise — shown during rest */}
+      {phase === "rest" && nextExercise && (
+        <div style={{
+          margin: "0 0 14px",
+          padding: "10px 14px",
+          background: "#f7f7f7",
+          border: "1px solid #eaeaea",
+          borderRadius: 8,
+          textAlign: "left",
+        }}>
+          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "#999", marginBottom: 4 }}>
+            Up next
+          </div>
+          <div style={{ fontSize: 14, fontWeight: 600, color: "#0a0a0a" }}>{nextExercise.name}</div>
+          <div style={{ fontSize: 12, color: "#888", marginTop: 2 }}>
+            {nextExercise.sets} sets · {nextExercise.reps} · {nextExercise.weight}
+          </div>
         </div>
       )}
 
