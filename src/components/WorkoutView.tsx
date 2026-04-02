@@ -9,6 +9,7 @@ interface Props {
   workoutKey: "A" | "B";
   workout: Workout;
   session: WorkoutSessionState;
+  minimized: boolean;
   onPrev: () => void;
   onSkip: () => void;
   onPause: () => void;
@@ -17,7 +18,7 @@ interface Props {
   onMinimize: () => void;
 }
 
-export default function WorkoutView({ workoutKey, workout, session, onPrev, onSkip, onPause, onResume, onStop, onMinimize }: Props) {
+export default function WorkoutView({ workoutKey, workout, session, minimized, onPrev, onSkip, onPause, onResume, onStop, onMinimize }: Props) {
   const [expanded, setExpanded] = useState<string | null>(null);
   const currentEx = session.phase !== "idle" ? workout.exercises[session.exerciseIndex] ?? null : null;
   const nextEx = session.phase === "rest" ? workout.exercises[session.exerciseIndex] ?? null : null;
@@ -28,7 +29,7 @@ export default function WorkoutView({ workoutKey, workout, session, onPrev, onSk
 
   return (
     <div>
-      {session.phase !== "idle" && (
+      {session.phase !== "idle" && !minimized && (
         <WorkoutTimerPanel
           state={session}
           exercise={currentEx}

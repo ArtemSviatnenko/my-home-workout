@@ -88,11 +88,12 @@ export default function App() {
       )}
 
       {/* Views */}
-      {(tab === "A" || tab === "B") && !minimized && (
+      {(tab === "A" || tab === "B") && (
         <WorkoutView
           workoutKey={tab}
           workout={workouts[tab]}
           session={session}
+          minimized={minimized}
           onPrev={prev}
           onSkip={skip}
           onPause={pause}
