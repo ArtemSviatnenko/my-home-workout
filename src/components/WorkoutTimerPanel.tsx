@@ -142,7 +142,7 @@ export default function WorkoutTimerPanel({ state, exercise, nextExercise, worko
 
       {/* Exercise name */}
       {exercise && !isComplete && (
-        <div style={{ fontSize: 16, fontWeight: 600, color: "#0a0a0a", marginBottom: 14 }}>
+        <div style={{ fontSize: 22, fontWeight: 700, color: "#0a0a0a", marginBottom: 14 }}>
           {exercise.name}
         </div>
       )}
@@ -234,8 +234,8 @@ export default function WorkoutTimerPanel({ state, exercise, nextExercise, worko
           <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "#999", marginBottom: 4 }}>
             Up next
           </div>
-          <div style={{ fontSize: 14, fontWeight: 600, color: "#0a0a0a" }}>{nextExercise.name}</div>
-          <div style={{ fontSize: 12, color: "#888", marginTop: 2 }}>
+          <div style={{ fontSize: 20, fontWeight: 700, color: "#0a0a0a" }}>{nextExercise.name}</div>
+          <div style={{ fontSize: 15, color: "#888", marginTop: 4 }}>
             {nextExercise.sets} sets · {nextExercise.reps} · {nextExercise.weight}
           </div>
         </div>
