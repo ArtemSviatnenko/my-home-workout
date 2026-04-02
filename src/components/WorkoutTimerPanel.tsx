@@ -63,15 +63,58 @@ const iconBtn: React.CSSProperties = {
   width: 44, height: 44, borderRadius: "50%",
   border: "1px solid #eaeaea", background: "#fff",
   display: "flex", alignItems: "center", justifyContent: "center",
-  cursor: "pointer", fontSize: 18, color: "#444", flexShrink: 0,
+  cursor: "pointer", flexShrink: 0,
 };
 
 const stopBtn: React.CSSProperties = {
   width: 36, height: 36, borderRadius: "50%",
   border: "1px solid #fecaca", background: "#fff",
   display: "flex", alignItems: "center", justifyContent: "center",
-  cursor: "pointer", fontSize: 14, color: "#dc2626", flexShrink: 0,
+  cursor: "pointer", flexShrink: 0,
 };
+
+function IconPrev() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <polygon points="13,2 5,8 13,14" fill="#444" />
+      <rect x="2" y="2" width="2.5" height="12" rx="1" fill="#444" />
+    </svg>
+  );
+}
+
+function IconNext() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <polygon points="3,2 11,8 3,14" fill="#444" />
+      <rect x="11.5" y="2" width="2.5" height="12" rx="1" fill="#444" />
+    </svg>
+  );
+}
+
+function IconPause({ color }: { color: string }) {
+  return (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+      <rect x="2" y="1" width="3.5" height="12" rx="1" fill={color} />
+      <rect x="8.5" y="1" width="3.5" height="12" rx="1" fill={color} />
+    </svg>
+  );
+}
+
+function IconPlay({ color }: { color: string }) {
+  return (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+      <polygon points="3,1 13,7 3,13" fill={color} />
+    </svg>
+  );
+}
+
+function IconStop() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+      <rect x="1" y="1" width="10" height="10" rx="2" fill="#dc2626" />
+    </svg>
+  );
+}
 
 export default function WorkoutTimerPanel({ state, exercise, workoutColor, onPrev, onSkip, onPause, onResume, onStop, exerciseDuration, restDuration, bufferDuration }: Props) {
   const { phase, timeRemaining, exerciseIndex, setIndex, paused } = state;
@@ -134,7 +177,7 @@ export default function WorkoutTimerPanel({ state, exercise, workoutColor, onPre
 
           {/* Prev */}
           <button onClick={onPrev} style={iconBtn} title="Previous set">
-            ◀
+            <IconPrev />
           </button>
 
           {/* SVG Ring */}
@@ -164,15 +207,15 @@ export default function WorkoutTimerPanel({ state, exercise, workoutColor, onPre
               <div style={{ fontSize: 30, fontWeight: 700, fontFamily: "monospace", color: "#0a0a0a", lineHeight: 1 }}>
                 {formatTime(timeRemaining)}
               </div>
-              <div style={{ fontSize: 13, color: "#bbb" }}>
-                {paused ? "▶" : "⏸"}
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                {paused ? <IconPlay color="#bbb" /> : <IconPause color="#bbb" />}
               </div>
             </div>
           </div>
 
           {/* Skip */}
           <button onClick={onSkip} style={iconBtn} title="Skip">
-            ▶
+            <IconNext />
           </button>
         </div>
       )}
@@ -191,7 +234,7 @@ export default function WorkoutTimerPanel({ state, exercise, workoutColor, onPre
           </button>
         ) : (
           <button onClick={onStop} style={stopBtn} title="Stop workout">
-            ⏹
+            <IconStop />
           </button>
         )}
       </div>
