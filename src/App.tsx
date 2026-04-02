@@ -2,8 +2,9 @@ import { useState } from "react";
 
 const workouts = {
   A: {
-    title: "Workout A — Pull + Biceps + Core",
-    color: "#3b82f6",
+    title: "Workout A",
+    subtitle: "Pull · Biceps · Core",
+    color: "#2563eb",
     exercises: [
       { name: "Pull-ups (or negatives)", sets: "3", reps: "max / 5–8", weight: "bodyweight", tip: "Can't do a pull-up yet? Do negatives: jump to the bar and slowly lower yourself over 5 seconds." },
       { name: "Australian pull-ups (rows)", sets: "3", reps: "10–12", weight: "bodyweight", tip: "Under the bar — keep body straight, pull chest up to the bar." },
@@ -14,8 +15,9 @@ const workouts = {
     ]
   },
   B: {
-    title: "Workout B — Push + Triceps + Legs",
-    color: "#10b981",
+    title: "Workout B",
+    subtitle: "Push · Triceps · Legs",
+    color: "#059669",
     exercises: [
       { name: "Push-ups", sets: "3", reps: "max (at least 5)", weight: "bodyweight", tip: "Too hard? Do them from your knees. Goal is full range of motion." },
       { name: "Dumbbell floor press", sets: "3", reps: "10–12", weight: "8–12 kg", tip: "Lie on the floor, lower dumbbells until elbows touch the floor." },
@@ -28,87 +30,254 @@ const workouts = {
 };
 
 const schedule = [
-  { week: "1–2", freq: "2×/week", intensity: "Easy", note: "Get used to the movements — don't rush the reps or weight." },
-  { week: "3–4", freq: "2×/week", intensity: "Moderate", note: "Add reps or weight where it feels easy." },
-  { week: "5–6", freq: "2×/week", intensity: "Moderate+", note: "You should feel your muscles the next day." },
-  { week: "7–8", freq: "2×/week", intensity: "Normal", note: "Assess whether you're ready to move to 3×/week." },
+  { week: "1–2", intensity: "Easy", note: "Get used to the movements — don't rush the reps or weight." },
+  { week: "3–4", intensity: "Moderate", note: "Add reps or weight where it feels easy." },
+  { week: "5–6", intensity: "Moderate+", note: "You should feel your muscles the next day." },
+  { week: "7–8", intensity: "Normal", note: "Assess whether you're ready to move to 3×/week." },
 ];
+
+const intensityColor: Record<string, string> = {
+  Easy: "#dcfce7",
+  Moderate: "#fef9c3",
+  "Moderate+": "#ffedd5",
+  Normal: "#dbeafe",
+};
+const intensityText: Record<string, string> = {
+  Easy: "#166534",
+  Moderate: "#854d0e",
+  "Moderate+": "#9a3412",
+  Normal: "#1e40af",
+};
 
 export default function App() {
   const [tab, setTab] = useState("A");
   const [expanded, setExpanded] = useState<string | null>(null);
 
-  return (
-    <div style={{ fontFamily: "sans-serif", maxWidth: 600, width: "100%", margin: "0 auto", padding: 16, color: "#1f2937", textAlign: "left", boxSizing: "border-box", fontSize: 16, lineHeight: "normal", letterSpacing: "normal" }}>
-      <h2 style={{ fontSize: 18, fontWeight: 700, marginBottom: 4 }}>🏋️ Workout Plan — Months 1–2</h2>
-      <p style={{ fontSize: 13, color: "#6b7280", marginBottom: 16 }}>Alternate A and B with a rest day in between. Example: Mon → A, Thu → B</p>
+  const tabs = [
+    { id: "A", label: "Workout A" },
+    { id: "B", label: "Workout B" },
+    { id: "sched", label: "Progression" },
+  ];
 
-      <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
-        {["A", "B", "📅"].map(t => (
-          <button key={t} onClick={() => setTab(t)} style={{
-            flex: 1, padding: "10px 0", borderRadius: 10, border: "none", cursor: "pointer",
-            background: tab === t ? (t === "A" ? "#3b82f6" : t === "B" ? "#10b981" : "#8b5cf6") : "#f3f4f6",
-            color: tab === t ? "#fff" : "#374151", fontWeight: 600, fontSize: 14
-          }}>
-            {t === "📅" ? "📅 Progression" : `Workout ${t}`}
+  return (
+    <div style={{
+      maxWidth: 520,
+      width: "100%",
+      margin: "0 auto",
+      padding: "24px 16px 48px",
+      textAlign: "left",
+    }}>
+      {/* Header */}
+      <div style={{ marginBottom: 24 }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "#9ca3af", marginBottom: 6 }}>
+          Months 1–2
+        </div>
+        <h2 style={{ fontSize: 22, fontWeight: 600, color: "#111", letterSpacing: "-0.3px" }}>
+          🏋️ Home Workout Plan
+        </h2>
+        <p style={{ fontSize: 13, color: "#9ca3af", marginTop: 4 }}>
+          Alternate A and B · rest day in between · Mon → A, Thu → B
+        </p>
+      </div>
+
+      {/* Tab bar */}
+      <div style={{
+        display: "flex",
+        background: "#efefed",
+        borderRadius: 10,
+        padding: 3,
+        marginBottom: 20,
+        gap: 2,
+      }}>
+        {tabs.map(t => (
+          <button
+            key={t.id}
+            onClick={() => { setTab(t.id); setExpanded(null); }}
+            style={{
+              flex: 1,
+              padding: "7px 0",
+              borderRadius: 8,
+              border: "none",
+              cursor: "pointer",
+              fontSize: 13,
+              fontWeight: 500,
+              transition: "all 0.15s ease",
+              background: tab === t.id ? "#fff" : "transparent",
+              color: tab === t.id ? "#111" : "#888",
+              boxShadow: tab === t.id ? "0 1px 3px rgba(0,0,0,0.1)" : "none",
+            }}
+          >
+            {t.label}
           </button>
         ))}
       </div>
 
+      {/* Workout tabs */}
       {(tab === "A" || tab === "B") && (() => {
         const w = workouts[tab];
         return (
           <div>
-            <div style={{ background: w.color, color: "#fff", borderRadius: 10, padding: "10px 14px", marginBottom: 12, fontSize: 15, fontWeight: 600 }}>
-              {w.title}
+            {/* Workout header */}
+            <div style={{
+              borderLeft: `3px solid ${w.color}`,
+              paddingLeft: 12,
+              marginBottom: 16,
+            }}>
+              <div style={{ fontSize: 16, fontWeight: 600, color: "#111" }}>{w.title}</div>
+              <div style={{ fontSize: 12, color: "#9ca3af", marginTop: 2 }}>{w.subtitle}</div>
             </div>
-            {w.exercises.map((ex, i) => (
-              <div key={i} onClick={() => setExpanded(expanded === `${tab}-${i}` ? null : `${tab}-${i}`)}
-                style={{ background: "#f9fafb", borderRadius: 10, padding: "12px 14px", marginBottom: 8, cursor: "pointer", border: "1px solid #e5e7eb" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <div>
-                    <div style={{ fontWeight: 600, fontSize: 14 }}>{ex.name}</div>
-                    <div style={{ fontSize: 12, color: "#6b7280", marginTop: 2 }}>
-                      {ex.sets} sets · {ex.reps} · {ex.weight}
+
+            {/* Exercise cards */}
+            {w.exercises.map((ex, i) => {
+              const key = `${tab}-${i}`;
+              const isOpen = expanded === key;
+              return (
+                <div
+                  key={i}
+                  onClick={() => setExpanded(isOpen ? null : key)}
+                  style={{
+                    background: "#fff",
+                    borderRadius: 10,
+                    border: "1px solid #e8e6e3",
+                    marginBottom: 6,
+                    cursor: "pointer",
+                    overflow: "hidden",
+                    transition: "box-shadow 0.15s ease",
+                    boxShadow: isOpen ? "0 2px 8px rgba(0,0,0,0.06)" : "none",
+                  }}
+                >
+                  <div style={{
+                    display: "flex",
+                    alignItems: "center",
+                    padding: "11px 14px",
+                    gap: 12,
+                  }}>
+                    {/* Color dot */}
+                    <div style={{
+                      width: 6,
+                      height: 6,
+                      borderRadius: "50%",
+                      background: w.color,
+                      flexShrink: 0,
+                    }} />
+                    {/* Text */}
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 13, fontWeight: 500, color: "#111", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                        {ex.name}
+                      </div>
+                      <div style={{ fontSize: 11, color: "#aaa", marginTop: 2 }}>
+                        {ex.sets} sets · {ex.reps} · {ex.weight}
+                      </div>
                     </div>
+                    {/* Chevron */}
+                    <span style={{
+                      fontSize: 10,
+                      color: "#ccc",
+                      transition: "transform 0.2s ease",
+                      transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
+                      display: "inline-block",
+                      flexShrink: 0,
+                    }}>▼</span>
                   </div>
-                  <span style={{ color: "#9ca3af", fontSize: 18 }}>{expanded === `${tab}-${i}` ? "▲" : "▼"}</span>
+
+                  {isOpen && (
+                    <div style={{
+                      padding: "0 14px 12px 32px",
+                      fontSize: 12,
+                      color: "#555",
+                      lineHeight: 1.6,
+                      borderTop: `1px solid ${w.color}22`,
+                      paddingTop: 10,
+                    }}>
+                      💡 {ex.tip}
+                    </div>
+                  )}
                 </div>
-                {expanded === `${tab}-${i}` && (
-                  <div style={{ marginTop: 10, fontSize: 13, color: "#374151", background: "#fff", borderRadius: 8, padding: "8px 10px", borderLeft: `3px solid ${w.color}` }}>
-                    💡 {ex.tip}
-                  </div>
-                )}
-              </div>
-            ))}
-            <div style={{ background: "#fef3c7", borderRadius: 10, padding: "10px 14px", fontSize: 13, color: "#92400e", marginTop: 8 }}>
-              ⏱ Rest between sets: <strong>60–90 sec</strong><br/>
-              🕐 Total duration: <strong>35–45 min</strong>
+              );
+            })}
+
+            {/* Rest info */}
+            <div style={{
+              marginTop: 12,
+              padding: "10px 14px",
+              background: "#fffbeb",
+              borderRadius: 8,
+              fontSize: 12,
+              color: "#78350f",
+              display: "flex",
+              gap: 16,
+            }}>
+              <span>⏱ Rest: <strong>60–90 sec</strong></span>
+              <span>🕐 Duration: <strong>35–45 min</strong></span>
             </div>
           </div>
         );
       })()}
 
-      {tab === "📅" && (
+      {/* Schedule tab */}
+      {tab === "sched" && (
         <div>
-          <div style={{ background: "#8b5cf6", color: "#fff", borderRadius: 10, padding: "10px 14px", marginBottom: 12, fontSize: 15, fontWeight: 600 }}>
-            📅 Weekly Progression
+          <div style={{
+            borderLeft: "3px solid #7c3aed",
+            paddingLeft: 12,
+            marginBottom: 16,
+          }}>
+            <div style={{ fontSize: 16, fontWeight: 600, color: "#111" }}>Weekly Progression</div>
+            <div style={{ fontSize: 12, color: "#9ca3af", marginTop: 2 }}>2× per week · 8 weeks</div>
           </div>
+
           {schedule.map((s, i) => (
-            <div key={i} style={{ background: "#f9fafb", border: "1px solid #e5e7eb", borderRadius: 10, padding: "12px 14px", marginBottom: 8 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
-                <span style={{ fontWeight: 700, fontSize: 14 }}>Week {s.week}</span>
-                <span style={{ background: "#ede9fe", color: "#6d28d9", borderRadius: 20, padding: "2px 10px", fontSize: 12, fontWeight: 600 }}>{s.intensity}</span>
+            <div key={i} style={{
+              background: "#fff",
+              border: "1px solid #e8e6e3",
+              borderRadius: 10,
+              padding: "12px 14px",
+              marginBottom: 6,
+            }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span style={{ fontSize: 13, fontWeight: 600, color: "#111" }}>Week {s.week}</span>
+                <span style={{
+                  fontSize: 11,
+                  fontWeight: 500,
+                  background: intensityColor[s.intensity] ?? "#f3f4f6",
+                  color: intensityText[s.intensity] ?? "#374151",
+                  borderRadius: 20,
+                  padding: "2px 10px",
+                }}>
+                  {s.intensity}
+                </span>
               </div>
-              <div style={{ fontSize: 12, color: "#6b7280" }}>{s.note}</div>
+              <div style={{ fontSize: 12, color: "#9ca3af", marginTop: 4 }}>{s.note}</div>
             </div>
           ))}
-          <div style={{ background: "#d1fae5", borderRadius: 10, padding: "12px 14px", fontSize: 13, color: "#065f46", marginTop: 8 }}>
-            <strong>After 8 weeks:</strong><br/>
+
+          {/* After 8 weeks */}
+          <div style={{
+            marginTop: 10,
+            background: "#f0fdf4",
+            border: "1px solid #bbf7d0",
+            borderRadius: 10,
+            padding: "12px 14px",
+            fontSize: 12,
+            color: "#14532d",
+            lineHeight: 1.6,
+          }}>
+            <strong>After 8 weeks:</strong><br />
             If recovery feels good and blood sugar is stable — move to 3×/week. We can then add a third workout or split into upper/lower body days.
           </div>
-          <div style={{ background: "#fee2e2", borderRadius: 10, padding: "12px 14px", fontSize: 13, color: "#991b1b", marginTop: 8 }}>
-            <strong>⚠️ Blood sugar note:</strong><br/>
+
+          {/* Blood sugar note */}
+          <div style={{
+            marginTop: 8,
+            background: "#fff1f2",
+            border: "1px solid #fecdd3",
+            borderRadius: 10,
+            padding: "12px 14px",
+            fontSize: 12,
+            color: "#881337",
+            lineHeight: 1.6,
+          }}>
+            <strong>⚠️ Blood sugar note:</strong><br />
             Measure your levels before and after workouts for the first 2–3 weeks. If you notice sharp swings, consult your doctor about adjustments.
           </div>
         </div>
