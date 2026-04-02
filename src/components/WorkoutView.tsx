@@ -83,7 +83,7 @@ export default function WorkoutView({ workoutKey, workout, session, onStart, onP
             padding: "12px 0",
             borderRadius: 8,
             border: "none",
-            background: workout.color,
+            background: "#10b981",
             color: "#fff",
             fontSize: 14,
             fontWeight: 600,
