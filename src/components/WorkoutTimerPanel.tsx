@@ -188,12 +188,12 @@ export default function WorkoutTimerPanel({ state, exercise, nextExercise, worko
             title={paused ? "Resume" : "Pause"}
           >
             <svg width="170" height="170" style={{ transform: "rotate(-90deg)" }}>
-              <circle cx="85" cy="85" r={RADIUS} fill="none" stroke="#eaeaea" strokeWidth="4" />
+              <circle cx="85" cy="85" r={RADIUS} fill="none" stroke="#eaeaea" strokeWidth="10" />
               <circle
                 cx="85" cy="85" r={RADIUS}
                 fill="none"
                 stroke={color}
-                strokeWidth="4"
+                strokeWidth="10"
                 strokeLinecap="round"
                 strokeDasharray={CIRCUMFERENCE}
                 strokeDashoffset={dashOffset}
