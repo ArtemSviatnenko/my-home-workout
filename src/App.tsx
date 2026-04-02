@@ -39,7 +39,7 @@ export default function App() {
   const [expanded, setExpanded] = useState<string | null>(null);
 
   return (
-    <div style={{ fontFamily: "sans-serif", maxWidth: 600, width: "100%", margin: "0 auto", padding: 16, color: "var(--text-primary, #1f2937)", textAlign: "left", boxSizing: "border-box" }}>
+    <div style={{ fontFamily: "sans-serif", maxWidth: 600, width: "100%", margin: "0 auto", padding: 16, color: "#1f2937", textAlign: "left", boxSizing: "border-box", fontSize: 16, lineHeight: "normal", letterSpacing: "normal" }}>
       <h2 style={{ fontSize: 18, fontWeight: 700, marginBottom: 4 }}>🏋️ Workout Plan — Months 1–2</h2>
       <p style={{ fontSize: 13, color: "#6b7280", marginBottom: 16 }}>Alternate A and B with a rest day in between. Example: Mon → A, Thu → B</p>
 
