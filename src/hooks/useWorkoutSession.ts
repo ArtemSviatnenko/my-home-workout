@@ -10,6 +10,7 @@ export interface WorkoutSessionState {
   exerciseIndex: number;
   setIndex: number;
   timeRemaining: number;
+  paused: boolean;
 }
 
 type Action =
@@ -17,6 +18,8 @@ type Action =
   | { type: "TICK" }
   | { type: "PHASE_COMPLETE" }
   | { type: "SKIP" }
+  | { type: "PAUSE" }
+  | { type: "RESUME" }
   | { type: "ABORT" };
 
 const INITIAL_STATE: WorkoutSessionState = {
@@ -25,6 +28,7 @@ const INITIAL_STATE: WorkoutSessionState = {
   exerciseIndex: 0,
   setIndex: 0,
   timeRemaining: 0,
+  paused: false,
 };
 
 function advance(state: WorkoutSessionState): WorkoutSessionState {
@@ -53,13 +57,18 @@ function advance(state: WorkoutSessionState): WorkoutSessionState {
 function reducer(state: WorkoutSessionState, action: Action): WorkoutSessionState {
   switch (action.type) {
     case "START":
-      return { phase: "buffer", workoutKey: action.workoutKey, exerciseIndex: 0, setIndex: 0, timeRemaining: BUFFER_DURATION };
+      return { phase: "buffer", workoutKey: action.workoutKey, exerciseIndex: 0, setIndex: 0, timeRemaining: BUFFER_DURATION, paused: false };
     case "TICK":
+      if (state.paused) return state;
       if (state.timeRemaining <= 1) return advance(state);
       return { ...state, timeRemaining: state.timeRemaining - 1 };
     case "PHASE_COMPLETE":
     case "SKIP":
-      return advance(state);
+      return { ...advance(state), paused: false };
+    case "PAUSE":
+      return { ...state, paused: true };
+    case "RESUME":
+      return { ...state, paused: false };
     case "ABORT":
       return INITIAL_STATE;
     default:
@@ -106,8 +115,10 @@ export function useWorkoutSession() {
   function startWorkout(workoutKey: "A" | "B") {
     dispatch({ type: "START", workoutKey });
   }
-  function skip() { dispatch({ type: "SKIP" }); }
-  function abort() { dispatch({ type: "ABORT" }); }
+  function skip()   { dispatch({ type: "SKIP" }); }
+  function pause()  { dispatch({ type: "PAUSE" }); }
+  function resume() { dispatch({ type: "RESUME" }); }
+  function abort()  { dispatch({ type: "ABORT" }); }
 
-  return { state, startWorkout, skip, abort };
+  return { state, startWorkout, skip, pause, resume, abort };
 }

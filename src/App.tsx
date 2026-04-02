@@ -12,7 +12,7 @@ const TABS = [
 
 export default function App() {
   const [tab, setTab] = useState("A");
-  const { state: session, startWorkout, skip, abort } = useWorkoutSession();
+  const { state: session, startWorkout, skip, pause, resume, abort } = useWorkoutSession();
 
   return (
     <div style={{
@@ -69,6 +69,8 @@ export default function App() {
           session={session}
           onStart={startWorkout}
           onSkip={skip}
+          onPause={pause}
+          onResume={resume}
           onAbort={abort}
         />
       )}

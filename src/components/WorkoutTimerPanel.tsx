@@ -12,6 +12,8 @@ interface Props {
   exercise: Exercise | null;
   workoutColor: string;
   onSkip: () => void;
+  onPause: () => void;
+  onResume: () => void;
   onAbort: () => void;
   exerciseDuration: number;
   restDuration: number;
@@ -56,8 +58,8 @@ function formatTime(secs: number): string {
 const RADIUS = 54;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
-export default function WorkoutTimerPanel({ state, exercise, workoutColor, onSkip, onAbort, exerciseDuration, restDuration, bufferDuration }: Props) {
-  const { phase, timeRemaining, exerciseIndex, setIndex } = state;
+export default function WorkoutTimerPanel({ state, exercise, workoutColor, onSkip, onPause, onResume, onAbort, exerciseDuration, restDuration, bufferDuration }: Props) {
+  const { phase, timeRemaining, exerciseIndex, setIndex, paused } = state;
   const color = phaseColor(phase, workoutColor);
   const total = phaseDuration(phase, exerciseDuration, restDuration, bufferDuration);
   const progress = phase === "complete" ? 1 : timeRemaining / total;
@@ -94,7 +96,7 @@ export default function WorkoutTimerPanel({ state, exercise, workoutColor, onSki
 
       {/* SVG Ring */}
       {!isComplete && (
-        <div style={{ position: "relative", width: 140, height: 140, margin: "0 auto 20px" }}>
+        <div style={{ position: "relative", width: 140, height: 140, margin: "0 auto 20px", opacity: paused ? 0.45 : 1, transition: "opacity 0.2s" }}>
           <svg width="140" height="140" style={{ transform: "rotate(-90deg)" }}>
             <circle cx="70" cy="70" r={RADIUS} fill="none" stroke="#eaeaea" strokeWidth="8" />
             <circle
@@ -105,7 +107,7 @@ export default function WorkoutTimerPanel({ state, exercise, workoutColor, onSki
               strokeLinecap="round"
               strokeDasharray={CIRCUMFERENCE}
               strokeDashoffset={dashOffset}
-              style={{ transition: "stroke-dashoffset 0.9s linear, stroke 0.3s" }}
+              style={{ transition: paused ? "none" : "stroke-dashoffset 0.9s linear, stroke 0.3s" }}
             />
           </svg>
           <div style={{
@@ -140,16 +142,29 @@ export default function WorkoutTimerPanel({ state, exercise, workoutColor, onSki
       {/* Buttons */}
       <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
         {!isComplete && (
-          <button
-            onClick={onSkip}
-            style={{
-              padding: "8px 20px", borderRadius: 6, border: "1px solid #eaeaea",
-              background: "#fff", color: "#444", fontSize: 13, fontWeight: 500,
-              cursor: "pointer",
-            }}
-          >
-            Skip →
-          </button>
+          <>
+            <button
+              onClick={paused ? onResume : onPause}
+              style={{
+                padding: "8px 20px", borderRadius: 6, border: `1px solid ${color}`,
+                background: paused ? color : "#fff",
+                color: paused ? "#fff" : color,
+                fontSize: 13, fontWeight: 500, cursor: "pointer", transition: "all 0.15s",
+              }}
+            >
+              {paused ? "▶ Resume" : "⏸ Pause"}
+            </button>
+            <button
+              onClick={onSkip}
+              style={{
+                padding: "8px 20px", borderRadius: 6, border: "1px solid #eaeaea",
+                background: "#fff", color: "#444", fontSize: 13, fontWeight: 500,
+                cursor: "pointer",
+              }}
+            >
+              Skip →
+            </button>
+          </>
         )}
         <button
           onClick={onAbort}
