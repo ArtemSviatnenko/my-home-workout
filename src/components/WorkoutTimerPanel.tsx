@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import type { WorkoutSessionState, Phase } from "../hooks/useWorkoutSession";
 
 interface Exercise {
@@ -18,6 +18,7 @@ interface Props {
   onPause: () => void;
   onResume: () => void;
   onStop: () => void;
+  onMinimize: () => void;
   exerciseDuration: number;
   restDuration: number;
   bufferDuration: number;
@@ -118,7 +119,7 @@ function IconStop() {
   );
 }
 
-export default function WorkoutTimerPanel({ state, exercise, nextExercise, workoutColor, onPrev, onSkip, onPause, onResume, onStop, exerciseDuration, restDuration, bufferDuration }: Props) {
+export default function WorkoutTimerPanel({ state, exercise, nextExercise, workoutColor, onPrev, onSkip, onPause, onResume, onStop, onMinimize, exerciseDuration, restDuration, bufferDuration }: Props) {
   const { phase, timeRemaining, exerciseIndex, setIndex, paused } = state;
   const color = phaseColor(phase, workoutColor);
   const total = phaseDuration(phase, exerciseDuration, restDuration, bufferDuration);
@@ -126,39 +127,13 @@ export default function WorkoutTimerPanel({ state, exercise, nextExercise, worko
   const dashOffset = CIRCUMFERENCE * (1 - progress);
   const isComplete = phase === "complete";
 
-  const [minimized, setMinimized] = useState(false);
-
-  // Re-expand automatically when phase changes (e.g. rest → exercise auto-advance)
-  useEffect(() => { setMinimized(false); }, [phase]);
-
   function handleBackdropTap() {
     if (!paused) onPause();
-    setMinimized(true);
+    onMinimize();
   }
 
-  function handleContinue() {
-    setMinimized(false);
-    onResume();
-  }
-
-  // Minimized: show a floating pill button
-  if (minimized) {
-    return (
-      <button
-        onClick={handleContinue}
-        style={{
-          position: "fixed", bottom: 32, left: "50%", transform: "translateX(-50%)",
-          zIndex: 100, padding: "14px 32px", borderRadius: 50,
-          background: color, color: "#fff", border: "none",
-          fontSize: 16, fontWeight: 600, cursor: "pointer",
-          boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
-          letterSpacing: "0.02em",
-        }}
-      >
-        Continue
-      </button>
-    );
-  }
+  // Notify parent to re-expand when phase auto-advances
+  useEffect(() => { /* phase change handled by parent resetting minimized */ }, [phase]);
 
   return (
     <div

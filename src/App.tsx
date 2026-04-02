@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useWorkoutSession } from "./hooks/useWorkoutSession";
 import { workouts } from "./data/workouts";
 import WorkoutView from "./components/WorkoutView";
@@ -13,6 +13,10 @@ const TABS = [
 export default function App() {
   const [tab, setTab] = useState("A");
   const { state: session, startWorkout, prev, skip, pause, resume, abort } = useWorkoutSession();
+  const [minimized, setMinimized] = useState(false);
+
+  // Re-expand when phase auto-advances
+  useEffect(() => { setMinimized(false); }, [session.phase]);
 
   return (
     <div style={{
@@ -84,7 +88,7 @@ export default function App() {
       )}
 
       {/* Views */}
-      {(tab === "A" || tab === "B") && (
+      {(tab === "A" || tab === "B") && !minimized && (
         <WorkoutView
           workoutKey={tab}
           workout={workouts[tab]}
@@ -94,9 +98,28 @@ export default function App() {
           onPause={pause}
           onResume={resume}
           onStop={abort}
+          onMinimize={() => setMinimized(true)}
         />
       )}
       {tab === "sched" && <ProgressionView />}
+
+      {/* Continue pill — shown when timer is minimized, persists across tabs */}
+      {session.phase !== "idle" && minimized && (
+        <button
+          onClick={() => { setMinimized(false); resume(); }}
+          style={{
+            position: "fixed", bottom: 32, left: "50%", transform: "translateX(-50%)",
+            zIndex: 100, padding: "14px 32px", borderRadius: 50,
+            background: session.phase === "rest" ? "#f59e0b" : workouts[session.workoutKey]?.color ?? "#10b981",
+            color: "#fff", border: "none",
+            fontSize: 16, fontWeight: 600, cursor: "pointer",
+            boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
+            letterSpacing: "0.02em", whiteSpace: "nowrap",
+          }}
+        >
+          Continue
+        </button>
+      )}
 
     </div>
   );

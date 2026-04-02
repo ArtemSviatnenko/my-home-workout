@@ -14,9 +14,10 @@ interface Props {
   onPause: () => void;
   onResume: () => void;
   onStop: () => void;
+  onMinimize: () => void;
 }
 
-export default function WorkoutView({ workoutKey, workout, session, onPrev, onSkip, onPause, onResume, onStop }: Props) {
+export default function WorkoutView({ workoutKey, workout, session, onPrev, onSkip, onPause, onResume, onStop, onMinimize }: Props) {
   const [expanded, setExpanded] = useState<string | null>(null);
   const currentEx = session.phase !== "idle" ? workout.exercises[session.exerciseIndex] ?? null : null;
   const nextEx = session.phase === "rest" ? workout.exercises[session.exerciseIndex] ?? null : null;
@@ -38,6 +39,7 @@ export default function WorkoutView({ workoutKey, workout, session, onPrev, onSk
           onPause={onPause}
           onResume={onResume}
           onStop={onStop}
+          onMinimize={onMinimize}
           exerciseDuration={EXERCISE_DURATION}
           restDuration={REST_DURATION}
           bufferDuration={BUFFER_DURATION}
