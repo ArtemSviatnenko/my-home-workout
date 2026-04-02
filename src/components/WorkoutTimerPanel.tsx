@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import type { WorkoutSessionState, Phase } from "../hooks/useWorkoutSession";
 
 interface Exercise {
@@ -125,14 +126,52 @@ export default function WorkoutTimerPanel({ state, exercise, nextExercise, worko
   const dashOffset = CIRCUMFERENCE * (1 - progress);
   const isComplete = phase === "complete";
 
+  const [minimized, setMinimized] = useState(false);
+
+  // Re-expand automatically when phase changes (e.g. rest → exercise auto-advance)
+  useEffect(() => { setMinimized(false); }, [phase]);
+
+  function handleBackdropTap() {
+    if (!paused) onPause();
+    setMinimized(true);
+  }
+
+  function handleContinue() {
+    setMinimized(false);
+    onResume();
+  }
+
+  // Minimized: show a floating pill button
+  if (minimized) {
+    return (
+      <button
+        onClick={handleContinue}
+        style={{
+          position: "fixed", bottom: 32, left: "50%", transform: "translateX(-50%)",
+          zIndex: 100, padding: "14px 32px", borderRadius: 50,
+          background: color, color: "#fff", border: "none",
+          fontSize: 16, fontWeight: 600, cursor: "pointer",
+          boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
+          letterSpacing: "0.02em",
+        }}
+      >
+        Continue
+      </button>
+    );
+  }
+
   return (
-    <div style={{
-      position: "fixed", inset: 0, zIndex: 100,
-      background: "#fff",
-      display: "flex", alignItems: "center", justifyContent: "center",
-      padding: "24px 20px",
-    }}>
-    <div className="timer-panel" style={{ borderColor: color, width: "100%", maxWidth: 480 }}>
+    <div
+      style={{
+        position: "fixed", inset: 0, zIndex: 100,
+        background: "rgba(255,255,255,0.5)",
+        backdropFilter: "blur(2px)",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        padding: "24px 20px",
+      }}
+      onClick={handleBackdropTap}
+    >
+    <div className="timer-panel" onClick={e => e.stopPropagation()} style={{ borderColor: color, width: "100%", maxWidth: 480 }}>
 
       {/* Progress */}
       {!isComplete && (
